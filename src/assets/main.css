@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+:root {
+    --radius-lg: 0.375rem; /* rounded-md */
+
+    --v-theme-surface: #ffffff;
+    --v-theme-background: #f9fafb;
+
+    --v-theme-primary: #3b82f6;
+    --v-theme-on-primary: #ffffff;
+}

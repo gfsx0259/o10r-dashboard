@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "https://example.com/project-settings.schema.json",
+  "type": "object",
+  "properties": {
+    "navigation": {
+      "type": "object",
+      "title": "General",
+      "properties": {
+        "return_url": { "type": "string", "title": "Return url","description": "Return back to merchant project" }
+      },
+      "required": ["return_url"]
+    },
+    "appearance": {
+      "type": "object",
+      "title": "Appearance",
+      "properties": {
+        "color": { "type": "string", "title": "Color", "description": "Merchant scheme color" }
+      },
+      "required": ["color"]
+    }
+  }
+}
