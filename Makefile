@@ -1,4 +1,4 @@
-.DEFAULT_GOAL := up
+.DEFAULT_GOAL := start
 
 # Run silent.
 MAKEFLAGS += --silent
@@ -7,8 +7,14 @@ MAKEFLAGS += --silent
 export UID=$(shell id -u)
 export GID=$(shell id -g)
 
+start: up ide
+
 up:
 	docker compose up -d --remove-orphans
+
+ide:
+	mkdir -p node_modules
+	npm i --ignore-scripts --no-save
 
 ps:
 	docker compose ps
