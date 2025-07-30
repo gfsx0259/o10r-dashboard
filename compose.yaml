@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     container_name: dash-spa
     networks:
-      - dev-ecommpay-pp-network
+      - dev-o10r-network
     labels:
       - traefik.enable=true
       - traefik.http.routers.dash_spa_https.rule=Host(`welcome.o10r.io`)
@@ -26,6 +26,6 @@ services:
       - NODE_ENV=development
 
 networks:
-  dev-ecommpay-pp-network:
-    name: dev-ecommpay-pp-network
+  dev-o10r-network:
+    name: dev-o10r-network
     external: true
