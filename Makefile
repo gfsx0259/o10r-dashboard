@@ -1,8 +1,5 @@
 .DEFAULT_GOAL := start
 
-# Run silent.
-MAKEFLAGS += --silent
-
 # Current user ID and group ID.
 export UID=$(shell id -u)
 export GID=$(shell id -g)
@@ -16,8 +13,3 @@ ide:
 	mkdir -p node_modules
 	npm i --ignore-scripts --no-save
 
-ps:
-	docker compose ps
-
-logs:
-	docker compose logs -f

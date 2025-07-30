@@ -1,11 +1,9 @@
 version: "3.8"
 
 services:
-  dash-spa:
+  dashboard:
     build:
       context: .
-      dockerfile: Dockerfile
-    container_name: dash-spa
     networks:
       - dev-o10r-network
     labels:
