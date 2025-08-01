@@ -2,15 +2,9 @@
   <div>
     <ul class="flex flex-col space-y-2">
       <li>
-        <strong class="block text-xs font-medium text-gray-400 uppercase"> General </strong>
+        <strong class="block text-xs font-medium text-gray-400 uppercase"> Project </strong>
 
         <ul class="mt-2 space-y-1">
-          <li>
-            <router-link to="/profile" active-class="!bg-gray-100 !text-gray-700"  class="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700">
-              Profile
-            </router-link>
-          </li>
-
           <li>
             <router-link to="/methods" active-class="!bg-gray-100 !text-gray-700"  class="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700">
               Methods
@@ -22,56 +16,25 @@
               Settings
             </router-link>
           </li>
-
-          <li>
-            <a
-                href="#"
-                class="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-            >
-              Meetings
-            </a>
-          </li>
-
-          <li>
-            <a
-                href="#"
-                class="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-            >
-              Calendar
-            </a>
-          </li>
         </ul>
       </li>
 
       <li>
-        <strong class="block text-xs font-medium text-gray-400 uppercase"> Support </strong>
+        <strong class="block text-xs font-medium text-gray-400 uppercase"> Catalog </strong>
 
         <ul class="mt-2 space-y-1">
           <li>
-            <a
-                href="#"
-                class="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-            >
-              Update
-            </a>
+            <router-link to="/catalog/methods" active-class="!bg-gray-100 !text-gray-700"  class="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700">
+              Methods
+            </router-link>
           </li>
 
           <li>
-            <a
-                href="#"
-                class="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-            >
-              Help
-            </a>
-          </li>
-
-          <li>
-            <a
-                href="#"
-                class="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-            >
-              Settings
-            </a>
+            <li>
+              <router-link to="/catalog/schemas" active-class="!bg-gray-100 !text-gray-700"  class="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700">
+                Schemas
+              </router-link>
+            </li>
           </li>
         </ul>
       </li>
@@ -81,21 +44,9 @@
 
         <ul class="mt-2 space-y-1">
           <li>
-            <a
-                href="#"
-                class="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-            >
-              Details
-            </a>
-          </li>
-
-          <li>
-            <a
-                href="#"
-                class="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-            >
-              Subscription
-            </a>
+            <router-link to="/profile" active-class="!bg-gray-100 !text-gray-700"  class="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700">
+              Profile
+            </router-link>
           </li>
 
           <li>

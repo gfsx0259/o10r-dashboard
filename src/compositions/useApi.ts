@@ -1,6 +1,7 @@
 import type {ApiResponse} from "@/types/api.ts";
 import type {Project} from "@/types/project.ts";
-import type {Setting} from "@/types/setting.ts";
+import type {Method} from "@/types/method.ts";
+import type {Schema} from "@/types/schema.ts";
 
 type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
@@ -25,6 +26,10 @@ const httpClient = (baseUrl: string, entity: string) => {
             throw new Error(`API error ${response.status}: ${errorBody}`);
         }
 
+        if (response.status === 204) {
+            return undefined as T;
+        }
+
         return response.json();
     };
 
@@ -46,6 +51,22 @@ const httpClient = (baseUrl: string, entity: string) => {
         return patch<ApiResponse<null>>(`/${projectId}/setting`, settings);
     };
 
+    const getMethods = async (): Promise<ApiResponse<Method[]>> => {
+        return useCatalog.get<ApiResponse<Method[]>>('/method');
+    }
+
+    const getSchemas = async (): Promise<ApiResponse<Schema[]>> => {
+        return useCatalog.get<ApiResponse<Schema[]>>('/schema');
+    }
+
+    const createSchema = async (schema: Schema): Promise<ApiResponse<Schema>> => {
+        return post<ApiResponse<Schema>>(`/schema`, schema);
+    };
+
+    const updateSchema = async (schema: Schema): Promise<ApiResponse<null>> => {
+        return patch<ApiResponse<null>>(`/schema/${schema.id}`, schema);
+    };
+
     return {
         invoke,
         get,
@@ -56,8 +77,12 @@ const httpClient = (baseUrl: string, entity: string) => {
         getProjects,
         replaceMethods,
         updateSettings,
+        getMethods,
+        getSchemas,
+        createSchema,
+        updateSchema,
     };
 };
 
 export const useProject = httpClient('https://project.o10r.io', 'project')
-export const useMethod = httpClient('https://project.o10r.io', 'method')
+export const useCatalog = httpClient('https://project.o10r.io', 'catalog')
