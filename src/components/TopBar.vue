@@ -44,6 +44,6 @@ const selectedProject = defineModel<Project>('activeProject')
 
 const avatarUrl = computed(() => {
   const email = props.user?.email || 'user'
-  return `https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(email)}`
+  return (props.user?.session as any)?.identity.traits.avatar_url || `https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(email)}`
 })
 </script>

@@ -89,6 +89,7 @@ import {type Ref, ref} from "vue";
 import { highlight, languages } from "prismjs";
 import JsonEditorControl from "@/components/controls/JsonEditorControl.vue";
 import type {Schema} from "@/types/schema.ts";
+import 'prismjs/themes/prism-dark.css';
 
 const isModalOpen = ref(false)
 const modalMode: Ref<"create" | "edit"> = ref ("create")
