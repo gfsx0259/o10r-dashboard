@@ -35,6 +35,6 @@ onMounted(async () => {
 
 <style>
 :root {
-  --radius-lg: 2rem;
+  --radius-lg: 0.25rem;
 }
 </style>

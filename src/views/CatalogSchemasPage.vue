@@ -1,17 +1,14 @@
 <template>
-  <div class="max-w-5xl mx-auto p-8 space-y-6">
-    <!-- Заголовок и кнопка -->
-    <div class="flex justify-between items-center bg-white p-4 rounded shadow">
-      <h1 class="text-2xl font-bold">Form Schemas</h1>
+  <div class="max-w-5xl mx-auto p-6 space-y-6">
+    <div class="flex justify-between items-center">
+      <h1 class="text-2xl font-bold">Schemas</h1>
       <button
           class="bg-blue-600 hover:bg-blue-700 transition text-white px-4 py-2 rounded"
           @click="() => open({ fields: '' })"
       >
-        + Create
+        Create
       </button>
     </div>
-
-    <!-- Список схем -->
     <div class="space-y-4">
       <div
           v-for="schema in useSchemaStore().data.schemas"
@@ -20,25 +17,21 @@
       >
         <div class="flex justify-between items-center mb-3">
           <h2 class="font-semibold text-lg">
-            Schema for
             <span class="text-blue-600 font-bold">
               {{ useMethodStore().data.methods.find(m => m.id === schema.method_id)?.title }}
             </span>
           </h2>
           <button
-              class="bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-1.5 rounded text-sm"
+              class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm"
               @click="() => open(schema)"
           >
             Edit
           </button>
         </div>
-
         <pre class="bg-gray-100 rounded p-3 text-sm font-mono overflow-x-auto">
 <code class="json">{{ schema.fields }}</code></pre>
       </div>
     </div>
-
-    <!-- Модалка -->
     <transition name="fade">
       <div
           v-if="isModalOpen"
@@ -55,7 +48,7 @@
                 v-model="currentMethodId"
                 class="w-full p-2 border rounded mt-1 focus:ring-2 focus:ring-blue-500"
             >
-              <option disabled :value="null">Select method</option>
+              <option disabled :value="undefined">Select method</option>
               <option
                   v-for="method in useMethodStore().data.methods"
                   :key="method.id"
@@ -65,7 +58,6 @@
               </option>
             </select>
           </label>
-
           <label class="block">
             <span class="text-sm font-medium">Fields</span>
             <JsonEditorControl
@@ -73,7 +65,6 @@
                 class="w-full p-2 border rounded font-mono text-sm mt-1"
             />
           </label>
-
           <div class="flex justify-end space-x-2 pt-2">
             <button
                 class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 transition"
@@ -93,15 +84,6 @@
     </transition>
   </div>
 </template>
-
-<style scoped>
-.fade-enter-active, .fade-leave-active {
-  transition: opacity 0.2s;
-}
-.fade-enter-from, .fade-leave-to {
-  opacity: 0;
-}
-</style>
 
 <script setup lang="ts">
 import { useSchemaStore } from '@/stores/schema'
@@ -147,3 +129,12 @@ async function save() {
   isModalOpen.value = false;
 }
 </script>
+
+<style scoped>
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.2s;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
+</style>

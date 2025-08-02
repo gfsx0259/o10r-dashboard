@@ -1,17 +1,19 @@
 <template>
-  <div class="max-w-3xl mx-auto p-6 space-y-8">
-    <h1 class="text-2xl font-bold text-gray-800">Settings</h1>
+  <div class="max-w-5xl mx-auto p-6 space-y-8">
+    <div class="flex justify-between items-center">
+      <h1 class="text-2xl font-bold">Settings</h1>
+      <button
+        class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+        @click="saveSettings"
+      >
+        Save
+      </button>
+    </div>
     <div class="mx-auto bg-white p-4 rounded shadow">
       <v-form>
         <vjsf v-if="schema"  :key="formKey" v-model="model" :schema="schema"/>
       </v-form>
     </div>
-    <button
-        @click="saveSettings"
-        class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-    >
-      Save
-    </button>
   </div>
 </template>
 

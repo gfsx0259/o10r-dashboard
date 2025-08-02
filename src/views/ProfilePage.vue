@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-3xl mx-auto p-6 space-y-8">
+  <div class="max-w-5xl mx-auto p-6 space-y-8">
     <h1 class="text-2xl font-bold text-gray-800">Profile</h1>
 
     <div v-if="session">
