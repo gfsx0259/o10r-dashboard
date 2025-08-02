@@ -17,19 +17,16 @@
       >
         <div class="flex justify-between items-center mb-3">
           <h2 class="font-semibold text-lg">
-            <span class="text-blue-600 font-bold">
               {{ useMethodStore().data.methods.find(m => m.id === schema.method_id)?.title }}
-            </span>
           </h2>
           <button
-              class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm"
+              class="bg-white hover:bg-gray-100 text-gray-700 border border-gray-300 px-3 py-1.5 rounded text-sm"
               @click="() => open(schema)"
           >
             Edit
           </button>
         </div>
-        <pre class="bg-gray-100 rounded p-3 text-sm font-mono overflow-x-auto">
-<code class="json">{{ schema.fields }}</code></pre>
+        <div class="bg-gray-100 rounded p-3 text-sm font-mono overflow-x-auto" v-html="highlight(schema.fields, languages.json, 'json')"></div>
       </div>
     </div>
     <transition name="fade">
@@ -89,7 +86,7 @@
 import { useSchemaStore } from '@/stores/schema'
 import { useMethodStore } from '@/stores/method'
 import {type Ref, ref} from "vue";
-
+import { highlight, languages } from "prismjs";
 import JsonEditorControl from "@/components/controls/JsonEditorControl.vue";
 import type {Schema} from "@/types/schema.ts";
 

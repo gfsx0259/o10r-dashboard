@@ -1,6 +1,6 @@
 <template>
   <header
-      class="absolute top-0 left-0 right-0 z-50 w-full backdrop-blur-md bg-white/70 border-b border-gray-200 px-6 py-4 flex justify-between items-center shadow-sm"
+      class="absolute top-0 left-0 right-0 z-50 w-full backdrop-blur-md bg-white/70 border-b border-gray-200 px-6 py-4 flex justify-between items-center"
   >
     <h1 class="text-xl font-semibold text-gray-800">O10R Dashboard</h1>
 
