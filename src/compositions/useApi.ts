@@ -67,6 +67,10 @@ const httpClient = (baseUrl: string, entity: string) => {
         return patch<ApiResponse<null>>(`/schema/${schema.id}`, schema);
     };
 
+    const deleteSchema = async (id: number): Promise<ApiResponse<null>> => {
+        return del<ApiResponse<null>>(`/schema/${id}`);
+    };
+
     return {
         invoke,
         get,
@@ -81,6 +85,7 @@ const httpClient = (baseUrl: string, entity: string) => {
         getSchemas,
         createSchema,
         updateSchema,
+        deleteSchema,
     };
 };
 

@@ -16,10 +16,24 @@ export const useSchemaStore = defineStore('schema', () => {
   }
 
   const persistSchema = async (schema: Schema) => {
-    return schema.id
-        ? await useCatalog.updateSchema(schema)
-        : await useCatalog.createSchema(schema);
+    let savedSchema: Schema;
+
+    if (schema.id) {
+      await useCatalog.updateSchema(schema);
+      const index = data.value.schemas.findIndex(s => s.id === schema.id);
+      if (index !== -1) {
+        data.value.schemas[index] = schema;
+      }
+    } else {
+      savedSchema = (await useCatalog.createSchema(schema)).data;
+      data.value.schemas.push(savedSchema);
+    }
   }
 
-  return { data, fetchSchema, persistSchema }
+  const deleteSchema = async (id: number) => {
+    await useCatalog.deleteSchema(id);
+    data.value.schemas = data.value.schemas.filter((schema: Schema) => schema.id !== id);
+  }
+
+  return { data, fetchSchema, persistSchema, deleteSchema }
 })

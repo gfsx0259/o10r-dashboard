@@ -19,12 +19,20 @@
           <h2 class="font-semibold text-lg">
               {{ useMethodStore().data.methods.find(m => m.id === schema.method_id)?.title }}
           </h2>
-          <button
-              class="bg-white hover:bg-gray-100 text-gray-700 border border-gray-300 px-3 py-1.5 rounded text-sm"
-              @click="() => open(schema)"
-          >
-            Edit
-          </button>
+          <div class="flex space-x-2">
+            <button
+                class="bg-white hover:bg-gray-100 text-gray-700 border border-gray-300 px-3 py-1.5 rounded text-sm"
+                @click="() => open(schema)"
+            >
+              Edit
+            </button>
+            <button
+                class="bg-white hover:bg-gray-100 text-gray-700 border border-gray-300 px-3 py-1.5 rounded text-sm"
+                @click="() => remove(schema)"
+            >
+              Delete
+            </button>
+          </div>
         </div>
         <div class="bg-gray-100 rounded p-3 text-sm font-mono overflow-x-auto" v-html="highlight(schema.fields, languages.json, 'json')"></div>
       </div>
@@ -42,7 +50,7 @@
           <label class="block">
             <span class="text-sm font-medium">Method</span>
             <select
-                v-model="currentMethodId"
+                v-model="currentSchema.method_id"
                 class="w-full p-2 border rounded mt-1 focus:ring-2 focus:ring-blue-500"
             >
               <option disabled :value="undefined">Select method</option>
@@ -58,7 +66,7 @@
           <label class="block">
             <span class="text-sm font-medium">Fields</span>
             <JsonEditorControl
-                v-model="currentFields"
+                v-model="currentSchema.fields"
                 class="w-full p-2 border rounded font-mono text-sm mt-1"
             />
           </label>
@@ -71,7 +79,7 @@
             </button>
             <button
                 class="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white transition"
-                @click="save"
+                @click="close"
             >
               Save
             </button>
@@ -94,35 +102,31 @@ import 'prismjs/themes/prism-dark.css';
 const isModalOpen = ref(false)
 const modalMode: Ref<"create" | "edit"> = ref ("create")
 
-const currentId: Ref<number | undefined> = ref();
-const currentMethodId = ref<number | undefined>()
-const currentFields = ref("")
+const currentSchema: Ref<Schema> = ref({fields: ""});
 
 function open(schema: Schema) {
   if (schema.id) {
     modalMode.value = "edit"
-
-    currentId.value = schema.id;
-    currentMethodId.value = <number>schema.method_id;
-    currentFields.value = <string>schema.fields;
+    currentSchema.value = { ...schema }
   } else {
     modalMode.value = "create"
-
-    currentId.value = undefined;
-    currentMethodId.value = undefined;
-    currentFields.value = '';
+    currentSchema.value = {
+      id: undefined,
+      method_id: undefined,
+      fields: "",
+    }
   }
-
   isModalOpen.value = true
 }
 
-async function save() {
-  await useSchemaStore().persistSchema({
-    id: currentId.value,
-    method_id: currentMethodId.value,
-    fields: currentFields.value,
-  })
-  await useSchemaStore().fetchSchema();
+function remove(schema: Schema) {
+  if (confirm('Are you sure?')) {
+    useSchemaStore().deleteSchema(<number>schema.id);
+  }
+}
+
+async function close() {
+  await useSchemaStore().persistSchema(currentSchema.value)
 
   isModalOpen.value = false;
 }
