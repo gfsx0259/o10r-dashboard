@@ -6,6 +6,7 @@ services:
       context: .
     networks:
       - dev-o10r-network
+    restart: unless-stopped
     labels:
       - traefik.enable=true
       - traefik.http.routers.dash_spa_https.rule=Host(`welcome.o10r.io`)
