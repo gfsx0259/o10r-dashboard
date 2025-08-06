@@ -52,8 +52,20 @@ const httpClient = (baseUrl: string, entity: string) => {
     };
 
     const getMethods = async (): Promise<ApiResponse<Method[]>> => {
-        return useCatalog.get<ApiResponse<Method[]>>('/method');
+        return get<ApiResponse<Method[]>>('/method');
     }
+
+    const createMethod = async (method: Method): Promise<ApiResponse<Method>> => {
+        return post<ApiResponse<Method>>('/method', method);
+    }
+
+    const updateMethod = async (method: Method): Promise<ApiResponse<Method[]>> => {
+        return patch<ApiResponse<Method[]>>(`/method/${method.id}`, method);
+    }
+
+    const deleteMethod = async (id: number): Promise<ApiResponse<null>> => {
+        return del<ApiResponse<null>>(`/method/${id}`);
+    };
 
     const getSchemas = async (): Promise<ApiResponse<Schema[]>> => {
         return useCatalog.get<ApiResponse<Schema[]>>('/schema');
@@ -82,6 +94,9 @@ const httpClient = (baseUrl: string, entity: string) => {
         replaceMethods,
         updateSettings,
         getMethods,
+        createMethod,
+        updateMethod,
+        deleteMethod,
         getSchemas,
         createSchema,
         updateSchema,

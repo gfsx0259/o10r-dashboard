@@ -16,8 +16,6 @@ export const useSchemaStore = defineStore('schema', () => {
   }
 
   const persistSchema = async (schema: Schema) => {
-    let savedSchema: Schema;
-
     if (schema.id) {
       await useCatalog.updateSchema(schema);
       const index = data.value.schemas.findIndex(s => s.id === schema.id);
@@ -25,7 +23,7 @@ export const useSchemaStore = defineStore('schema', () => {
         data.value.schemas[index] = schema;
       }
     } else {
-      savedSchema = (await useCatalog.createSchema(schema)).data;
+      const savedSchema = (await useCatalog.createSchema(schema)).data;
       data.value.schemas.push(savedSchema);
     }
   }

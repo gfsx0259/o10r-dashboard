@@ -4,7 +4,7 @@ export interface MethodStore {
 }
 
 export interface Method {
-    id: number,
+    id?: number,
     code: string,
     title: string,
     description: string,
