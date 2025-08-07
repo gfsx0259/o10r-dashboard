@@ -40,6 +40,18 @@
       </li>
 
       <li>
+        <strong class="block text-xs font-medium text-gray-400 uppercase"> Gateway </strong>
+
+        <ul class="mt-2 space-y-1">
+          <li>
+            <router-link to="/gateway/routes" active-class="!bg-gray-100 !text-gray-700"  class="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700">
+              Routes
+            </router-link>
+          </li>
+        </ul>
+      </li>
+
+      <li>
         <strong class="block text-xs font-medium text-gray-400 uppercase"> Profile </strong>
 
         <ul class="mt-2 space-y-1">
