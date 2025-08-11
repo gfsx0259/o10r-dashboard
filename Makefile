@@ -4,12 +4,17 @@
 export UID=$(shell id -u)
 export GID=$(shell id -g)
 
-start: up ide
+start: deps up
+
+deps:
+	mkdir -p node_modules
+	docker run --rm \
+		-v ${PWD}:/app \
+		-w /app \
+		-u "$(UID):$(GID)" \
+		--network="host" \
+		node:24.3.0-slim \
+		npm install --no-save
 
 up:
 	docker compose up -d --remove-orphans
-
-ide:
-	mkdir -p node_modules
-	npm i --ignore-scripts --no-save
-
