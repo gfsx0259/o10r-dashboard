@@ -11,6 +11,7 @@ import {useRouteStore} from "@/stores/route.ts";
 import {useScenarioStore} from "@/stores/scenario.ts";
 import ScenarioPage from "@/views/gateway/ScenarioPage.vue";
 import CallbackPage from "@/views/gateway/CallbackPage.vue";
+import DummyPage from "@/views/dummy/DummyPage.vue";
 import {useCallbackStore} from "@/stores/callback.ts";
 
 const router = createRouter({
@@ -96,6 +97,10 @@ const router = createRouter({
               await callbackStore.fetchCallback();
           }
       },
+    },
+    {
+          path: '/dummy/:mode',
+          component: DummyPage,
     },
   ],
 })
