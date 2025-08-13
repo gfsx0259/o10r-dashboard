@@ -66,7 +66,7 @@
                   :key="method.id"
                   :value="method.id"
               >
-                {{ method.title }}
+                {{ method.title }} ({{ method.code }})
               </option>
             </select>
           </label>
