@@ -9,7 +9,7 @@ start: deps up
 deps:
 	mkdir -p node_modules
 	docker run --rm \
-		-v ${PWD}:/app \
+		-v ./:/app \
 		-w /app \
 		-u "$(UID):$(GID)" \
 		--network="host" \
