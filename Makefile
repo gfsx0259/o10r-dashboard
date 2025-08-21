@@ -11,7 +11,6 @@ deps:
 	docker run --rm \
 		-v ./:/app \
 		-w /app \
-		-u "$(UID):$(GID)" \
 		--network="host" \
 		node:24.3.0-slim \
 		npm install --no-save
