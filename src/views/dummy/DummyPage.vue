@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 
 const route = useRoute()
@@ -26,14 +26,34 @@ const route = useRoute()
 const mode = ref(route.params.mode);
 const params = ref(route.query);
 
+const notificationUrl = route.query.notification_url as string;
+const isThreeDS2 = !route.query.md;
+const isHiddenIframe = Boolean(route.query.threeDSMethodData && route.query['3DSMethodData']);
+
+delete params.value.notification_url;
+
 const confirm = async () => {
   try {
-    debugger;
     if (mode.value === 'acs') {
-      await submitForm(route.query.term_url, {
-        'MD': route.query.md,
-        'PaRes': 'pares for' + route.query.pa_req
-      });
+      if (isThreeDS2) {
+        if (isHiddenIframe) {
+          await submitForm(notificationUrl, {
+            'threeDSServerTransID': 'db6ac3e0-b9ed-5d75-8000-000000001042',
+            'threeDSMethodData': route.query.threeDSMethodData as string
+          });
+        } else {
+          alert('Not implemented yet');
+          // await submitForm(notificationUrl, {
+          //   'threeDSServerTransID': 'db6ac3e0-b9ed-5d75-8000-000000001042',
+          //   'threeDSMethodData': route.query.threeDSMethodData as string
+          // });
+        }
+      } else {
+        await submitForm(route.query.term_url, {
+          'MD': route.query.md,
+          'PaRes': 'pares for' + route.query.pa_req
+        });
+      }
     } else {
       await submitForm(route.query.termination_url, route.query);
     }
@@ -60,6 +80,13 @@ const submitForm = (termUrl: string, payload: Record<string, string>) => {
   form.submit();
 };
 
+onMounted(
+    async () => {
+      if (isThreeDS2 && isHiddenIframe) {
+        await confirm();
+      }
+    }
+);
 </script>
 
 <style>
