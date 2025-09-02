@@ -26,30 +26,31 @@ const route = useRoute()
 const mode = ref(route.params.mode);
 const params = ref(route.query);
 
-const notificationUrl = route.query.notification_url as string;
+const returnUrlDefault = route.query['return_url[default]'] as string;
+const returnUrlNotification = route.query['return_url[notification]'] as string;
 const isThreeDS2 = !route.query.md;
 const isHiddenIframe = Boolean(route.query.threeDSMethodData && route.query['3DSMethodData']);
 
-delete params.value.notification_url;
+delete params.value['return_url[default]'];
+delete params.value['return_url[notification]'];
 
 const confirm = async () => {
   try {
     if (mode.value === 'acs') {
       if (isThreeDS2) {
         if (isHiddenIframe) {
-          await submitForm(notificationUrl, {
-            'threeDSServerTransID': 'db6ac3e0-b9ed-5d75-8000-000000001042',
+          await submitForm(returnUrlNotification, {
+            'threeDSServerTransID': 'string',
             'threeDSMethodData': route.query.threeDSMethodData as string
           });
         } else {
-          alert('Not implemented yet');
-          // await submitForm(notificationUrl, {
-          //   'threeDSServerTransID': 'db6ac3e0-b9ed-5d75-8000-000000001042',
-          //   'threeDSMethodData': route.query.threeDSMethodData as string
-          // });
+          await submitForm(returnUrlDefault, {
+            'cres': 'string',
+            'threeDSSessionData': 'string'
+          });
         }
       } else {
-        await submitForm(route.query.term_url, {
+        await submitForm(returnUrlDefault, {
           'MD': route.query.md,
           'PaRes': 'pares for' + route.query.pa_req
         });
