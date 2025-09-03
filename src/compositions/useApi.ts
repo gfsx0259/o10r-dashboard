@@ -54,6 +54,10 @@ const httpClient = (baseUrl: string, entity: string) => {
         return patch<ApiResponse<null>>(`/${projectId}/setting`, settings);
     };
 
+    const makeSession = async (projectId: number, paymentId: string, amount: number, currency: string): Promise<ApiResponse<null>> => {
+        return post<ApiResponse<{ sid: string }>>(`/${projectId}/session`, { paymentId, amount, currency });
+    };
+
     const getMethods = async (): Promise<ApiResponse<Method[]>> => {
         return get<ApiResponse<Method[]>>('/method');
     }
@@ -144,6 +148,7 @@ const httpClient = (baseUrl: string, entity: string) => {
         getProjects,
         replaceMethods,
         updateSettings,
+        makeSession,
         getMethods,
         createMethod,
         updateMethod,

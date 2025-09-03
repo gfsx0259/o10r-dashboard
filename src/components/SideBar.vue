@@ -16,6 +16,12 @@
               Settings
             </router-link>
           </li>
+
+          <li>
+            <router-link to="/playground" active-class="!bg-gray-100 !text-gray-700"  class="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700">
+              Playground
+            </router-link>
+          </li>
         </ul>
       </li>
 
