@@ -41,9 +41,25 @@
               Delete
             </button>
 
+            <RouterLink :to="{ path: `/playground`, query: { scenario: scenario.id }}">
+              <button
+                  class="bg-green-700 hover:bg-green-800 text-white border border-green-600 px-3 py-1.5 rounded text-sm"
+              >
+                Run
+              </button>
+            </RouterLink>
+
+            <RouterLink :to="{ path: `/gateway/routes/${parseInt(<string>route.params.routeId)}/scenario/${scenario.id}/static`}">
+              <button
+                  class="bg-slate-500 hover:bg-slate-600 text-white border border-slate-500 px-3 py-1.5 rounded text-sm"
+              >
+                Static
+              </button>
+            </RouterLink>
+
             <RouterLink :to="{ path: `/gateway/routes/${parseInt(<string>route.params.routeId)}/scenario/${scenario.id}`}">
               <button
-                  class="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 px-3 py-1.5 rounded text-sm"
+                  class="bg-gray-700 hover:bg-gray-800 text-white border border-gray-700 px-3 py-1.5 rounded text-sm"
               >
                 Callbacks
               </button>

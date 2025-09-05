@@ -5,6 +5,7 @@ import type {Schema} from "@/types/schema.ts";
 import type {Route} from "@/types/route.ts";
 import type {Scenario} from "@/types/scenario.ts";
 import type {Callback} from "@/types/callback.ts";
+import type {StaticRoute} from "@/types/static.ts";
 
 type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
@@ -54,8 +55,8 @@ const httpClient = (baseUrl: string, entity: string) => {
         return patch<ApiResponse<null>>(`/${projectId}/setting`, settings);
     };
 
-    const makeSession = async (projectId: number, paymentId: string, amount: number, currency: string): Promise<ApiResponse<null>> => {
-        return post<ApiResponse<{ sid: string }>>(`/${projectId}/session`, { paymentId, amount, currency });
+    const makeSession = async (projectId: number, paymentId: string, amount: number, currency: string, paymentDescription?: string, customerId?: number): Promise<ApiResponse<null>> => {
+        return post<ApiResponse<{ sid: string }>>(`/${projectId}/session`, { paymentId, amount, currency, paymentDescription, customerId });
     };
 
     const getMethods = async (): Promise<ApiResponse<Method[]>> => {
@@ -138,6 +139,22 @@ const httpClient = (baseUrl: string, entity: string) => {
         return del<ApiResponse<null>>(`/callback/${id}`);
     };
 
+    const getStaticRoute = async (): Promise<ApiResponse<StaticRoute[]>> => {
+        return get<ApiResponse<StaticRoute[]>>('/static');
+    }
+
+    const createStaticRoute = async (route: StaticRoute): Promise<ApiResponse<StaticRoute>> => {
+        return post<ApiResponse<StaticRoute>>('/static', route);
+    }
+
+    const updateStaticRoute = async (route: StaticRoute): Promise<ApiResponse<null>> => {
+        return patch<ApiResponse<null>>(`/static/${route.id}`, route);
+    }
+
+    const deleteStaticRoute = async (id: number): Promise<ApiResponse<null>> => {
+        return del<ApiResponse<null>>(`/static/${id}`);
+    };
+
     return {
         invoke,
         get,
@@ -169,6 +186,10 @@ const httpClient = (baseUrl: string, entity: string) => {
         createCallback,
         updateCallback,
         deleteCallback,
+        getStaticRoute,
+        createStaticRoute,
+        updateStaticRoute,
+        deleteStaticRoute,
     };
 };
 

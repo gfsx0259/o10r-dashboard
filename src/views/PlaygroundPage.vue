@@ -66,6 +66,27 @@
       </div>
     </div>
 
+    <!-- Section: Customer Details Group -->
+    <div class="rounded bg-white p-5 shadow">
+      <h2 class="mb-4 text-lg font-semibold">Customer — Customer Details</h2>
+
+      <div class="grid gap-4 md:grid-cols-2">
+        <!-- Customer ID -->
+        <div class="md:col-span-2">
+          <label class="mb-1 block text-sm font-medium text-gray-700">Customer ID</label>
+          <input
+              :disabled="locked.includes('customerId')"
+              v-model="form.customerId"
+              @input="onCustomerIdInput"
+              inputmode="numeric"
+              placeholder="e.g. 4999"
+              class="w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-gray-50"
+          />
+          <p class="mt-1 text-xs text-gray-500">Digits only, no separators (e.g., “4999” for 49.99 if cents-based).</p>
+        </div>
+      </div>
+    </div>
+
     <!-- Actions -->
     <div class="rounded bg-white p-5 shadow">
       <h2 class="mb-4 text-lg font-semibold">Actions</h2>
@@ -167,7 +188,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue';
+import { computed, onMounted, reactive, ref, watch, nextTick } from 'vue';
 import SearchSelect, { type Option } from '@/components/controls/SearchSelect.vue';
 import { useScenarioStore } from "@/stores/scenario.ts";
 import { useMethodStore } from "@/stores/method.ts";
@@ -175,9 +196,13 @@ import { useProjectStore } from "@/stores/project.ts";
 import { useRouteStore } from "@/stores/route.ts";
 import { useProject } from "@/compositions/useApi.ts";
 import Modal from '@/components/Modal.vue';
+import { useRoute } from "vue-router";
 
 type Currency = 'USD' | 'RUB' | 'EUR';
 
+const route = useRoute();
+
+const presetScenarioId = route.query.scenario;
 const routes = useRouteStore().data.routes;
 const scenarios = useScenarioStore().data.scenarios;
 const methods = useMethodStore().data.methods;
@@ -212,6 +237,7 @@ const form = reactive({
   currency: 'USD' as Currency,
   paymentId: '',
   description: '',
+  customerId: '',
 });
 
 const isValid = computed(() => {
@@ -231,6 +257,12 @@ function applyScenario(option: Option | null) {
   if (scenario) {
     const conditions = JSON.parse(scenario.conditions || '{}');
 
+    form.amount = '';
+    form.currency = 'USD';
+    form.paymentId = '';
+    form.description = '';
+    form.customerId = '';
+
     if (conditions['payment.amount']) {
       form.amount = sanitizeDigits(String(conditions['payment.amount']));
 
@@ -242,17 +274,31 @@ function applyScenario(option: Option | null) {
 
       locked.value.push('currency');
     }
+
+    if (conditions['customer.id']) {
+      form.customerId = sanitizeDigits(String(conditions['customer.id']));
+
+      locked.value.push('customerId');
+    }
   }
 }
 
 function sanitizeDigits(v: string) {
   return v.replace(/\D+/g, '');
 }
+
 function onAmountInput(e: Event) {
   const el = e.target as HTMLInputElement;
   const cleaned = sanitizeDigits(el.value);
   if (cleaned !== el.value) el.value = cleaned;
   form.amount = cleaned;
+}
+
+function onCustomerIdInput(e: Event) {
+  const el = e.target as HTMLInputElement;
+  const cleaned = sanitizeDigits(el.value);
+  if (cleaned !== el.value) el.value = cleaned;
+  form.customerId = cleaned;
 }
 
 async function buildUrl(): Promise<string> {
@@ -263,7 +309,9 @@ async function buildUrl(): Promise<string> {
         project.id,
         form.paymentId || `TEST_${Math.random().toString(36).slice(2, 10)}`,
         parseInt(form.amount),
-        form.currency
+        form.currency,
+        form.description || undefined,
+        parseInt(form.customerId) || undefined,
     );
 
     return `https://pp.o10r.io/?sid=${response.data.sid}`;
@@ -283,6 +331,20 @@ async function onBuildLink() {
   builtUrl.value = await buildUrl();
   buttonsDisabled.value = false;
 }
+
+onMounted(
+    () => {
+      if (presetScenarioId) {
+        const option = options.value.find(o => o.value === presetScenarioId);
+
+        if (option) {
+          selected.value = option;
+
+          nextTick(onBuildLink);
+        }
+      }
+    }
+);
 </script>
 
 <style scoped>

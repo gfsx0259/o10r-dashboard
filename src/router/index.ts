@@ -11,9 +11,11 @@ import {useRouteStore} from "@/stores/route.ts";
 import {useScenarioStore} from "@/stores/scenario.ts";
 import ScenarioPage from "@/views/gateway/ScenarioPage.vue";
 import CallbackPage from "@/views/gateway/CallbackPage.vue";
+import StaticPage from "@/views/gateway/StaticPage.vue";
 import PlaygroundPage from "@/views/PlaygroundPage.vue";
 import DummyPage from "@/views/dummy/DummyPage.vue";
 import {useCallbackStore} from "@/stores/callback.ts";
+import {useStaticStore} from "@/stores/static.ts";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -114,6 +116,16 @@ const router = createRouter({
           const callbackStore = useCallbackStore();
           if (!callbackStore.data.isInitialized) {
               await callbackStore.fetchCallback();
+          }
+      },
+    },
+    {
+      path: '/gateway/routes/:routeId/scenario/:scenarioId/static',
+      component: StaticPage,
+      beforeEnter: async () => {
+          const staticStore = useStaticStore();
+          if (!staticStore.data.isInitialized) {
+              await staticStore.fetchStatic();
           }
       },
     },
