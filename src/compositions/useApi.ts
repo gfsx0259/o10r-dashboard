@@ -6,6 +6,7 @@ import type {Route} from "@/types/route.ts";
 import type {Scenario} from "@/types/scenario.ts";
 import type {Callback} from "@/types/callback.ts";
 import type {StaticRoute} from "@/types/static.ts";
+import type {MockMode} from "@/types/mockMode.ts";
 
 type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
@@ -155,6 +156,14 @@ const httpClient = (baseUrl: string, entity: string) => {
         return del<ApiResponse<null>>(`/static/${id}`);
     };
 
+    const getMockMode = async (): Promise<ApiResponse<MockMode>> => {
+        return get<ApiResponse<MockMode>>('/mode');
+    };
+
+    const setMockMode = async (mode: MockMode): Promise<void> => {
+        return post<void>('/mode', mode);
+    };
+
     return {
         invoke,
         get,
@@ -190,6 +199,8 @@ const httpClient = (baseUrl: string, entity: string) => {
         createStaticRoute,
         updateStaticRoute,
         deleteStaticRoute,
+        getMockMode,
+        setMockMode,
     };
 };
 

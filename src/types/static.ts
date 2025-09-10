@@ -5,7 +5,7 @@ export interface StaticStore {
 
 export interface StaticRoute {
     id?: number,
-    scenario_id?: string,
+    name: string,
     path: string,
     body: string,
 }

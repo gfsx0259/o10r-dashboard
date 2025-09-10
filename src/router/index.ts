@@ -16,6 +16,7 @@ import PlaygroundPage from "@/views/PlaygroundPage.vue";
 import DummyPage from "@/views/dummy/DummyPage.vue";
 import {useCallbackStore} from "@/stores/callback.ts";
 import {useStaticStore} from "@/stores/static.ts";
+import {useMockModeStore} from "@/stores/mockMode.ts";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -49,6 +50,14 @@ const router = createRouter({
             const scenarioStore = useScenarioStore();
             if (!scenarioStore.data.isInitialized) {
                 await scenarioStore.fetchScenario();
+            }
+            const staticStore = useStaticStore();
+            if (!staticStore.data.isInitialized) {
+                await staticStore.fetchStatic();
+            }
+            const mockModeStore = useMockModeStore();
+            if (!mockModeStore.data.isInitialized) {
+                await mockModeStore.fetchMode();
             }
         },
     },
@@ -120,7 +129,7 @@ const router = createRouter({
       },
     },
     {
-      path: '/gateway/routes/:routeId/scenario/:scenarioId/static',
+      path: '/gateway/static',
       component: StaticPage,
       beforeEnter: async () => {
           const staticStore = useStaticStore();

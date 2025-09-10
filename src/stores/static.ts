@@ -29,6 +29,7 @@ export const useStaticStore = defineStore('static', () => {
 
   const deleteStatic = async (id: number) => {
       await useGateway.deleteStaticRoute(id);
+
       data.value.routes = data.value.routes.filter((route: StaticRoute) => route.id !== id);
   }
 

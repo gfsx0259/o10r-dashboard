@@ -5,12 +5,6 @@
       <div class="flex space-x-2">
         <button
             class="bg-blue-600 hover:bg-blue-700 transition text-white px-4 py-2 rounded"
-            @click="goBack"
-        >
-          Back to routes
-        </button>
-        <button
-            class="bg-blue-600 hover:bg-blue-700 transition text-white px-4 py-2 rounded"
             @click="() => open({ order: 0, body: ''})"
         >
           Create
@@ -19,11 +13,14 @@
     </div>
     <div class="space-y-4">
       <div
-          v-for="staticRoute in filteredStaticRoutes"
+          v-for="staticRoute in staticRoutes"
           :key="staticRoute.id"
           class="bg-white p-4 rounded shadow"
       >
         <div class="flex justify-between items-center mb-3">
+          <h2 class="font-semibold text-lg">
+            {{ staticRoute.name }}
+          </h2>
           <div class="flex space-x-2">
             <button
                 class="bg-white hover:bg-gray-100 text-gray-700 border border-gray-300 px-3 py-1.5 rounded text-sm"
@@ -52,6 +49,15 @@
           <h2 class="text-xl font-bold">
             {{ modalMode === 'create' ? 'Add Static Route' : 'Edit Static Route' }}
           </h2>
+          <label class="block">
+            <span class="text-sm font-medium">Name</span>
+            <input
+                class="w-full p-2 border rounded font-mono text-sm mt-1"
+                type="text"
+                name="name"
+                v-model="currentStaticRoute.name"
+            >
+          </label>
           <label class="block">
             <span class="text-sm font-medium">Path</span>
             <input
@@ -89,25 +95,16 @@
 </template>
 
 <script setup lang="ts">
-import {computed, type Ref, ref} from "vue";
+import {type Ref, ref, computed} from "vue";
 import JsonEditorControl from "@/components/controls/JsonEditorControl.vue";
 import {highlight, languages} from "prismjs";
-import { useRouter, useRoute } from 'vue-router'
-import {useCallbackStore} from "@/stores/callback.ts";
-import type {Callback} from "@/types/callback.ts";
 import {useStaticStore} from "@/stores/static.ts";
 import type {StaticRoute} from "@/types/static.ts";
-
-const route = useRoute()
-const router = useRouter()
-const goBack = () => router.back()
 
 const isModalOpen = ref(false)
 const modalMode: Ref<"create" | "edit"> = ref ("create")
 
-const filteredStaticRoutes = computed(() =>
-    useStaticStore().data.routes.filter((r: StaticRoute) => <number>(r.scenario_id as unknown) === parseInt(<string>route.params.scenarioId))
-)
+const staticRoutes = computed(() => useStaticStore().data.routes);
 
 const currentStaticRoute = ref();
 
@@ -120,7 +117,6 @@ function open(r: StaticRoute) {
     currentStaticRoute.value = {
       path: '',
       body: '',
-      scenario_id: parseInt(<string>route.params.scenarioId),
     }
   }
   isModalOpen.value = true

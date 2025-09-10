@@ -2,8 +2,15 @@
   <div class="space-y-6">
     <div class="rounded bg-white p-5 shadow">
       <SearchSelect
-          :options="options"
-          v-model="selected"
+          label="Scenario"
+          :options="scenarioOptions"
+          v-model="selectedScenarioOption"
+      />
+      <SearchSelect
+          label="Static data"
+          class="mt-3"
+          :options="staticOptions"
+          v-model="selectedStaticOptions"
       />
     </div>
 
@@ -16,7 +23,6 @@
         <div>
           <label class="mb-1 block text-sm font-medium text-gray-700">Amount</label>
           <input
-              :disabled="locked.includes('amount')"
               v-model="form.amount"
               @input="onAmountInput"
               inputmode="numeric"
@@ -30,7 +36,6 @@
         <div>
           <label class="mb-1 block text-sm font-medium text-gray-700">Currency</label>
           <select
-              :disabled="locked.includes('currency')"
               v-model="form.currency"
               class="w-full rounded border border-gray-300 bg-white px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-gray-50"
           >
@@ -44,7 +49,6 @@
         <div class="md:col-span-2">
           <label class="mb-1 block text-sm font-medium text-gray-700">Payment ID</label>
           <input
-              :disabled="locked.includes('paymentId')"
               v-model.trim="form.paymentId"
               placeholder="Any string identifier"
               class="w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-gray-50"
@@ -56,7 +60,6 @@
         <div class="md:col-span-2">
           <label class="mb-1 block text-sm font-medium text-gray-700">Description</label>
           <textarea
-              :disabled="locked.includes('description')"
               v-model.trim="form.description"
               rows="3"
               placeholder="Payment for Order #123, 2×Widgets"
@@ -75,7 +78,6 @@
         <div class="md:col-span-2">
           <label class="mb-1 block text-sm font-medium text-gray-700">Customer ID</label>
           <input
-              :disabled="locked.includes('customerId')"
               v-model="form.customerId"
               @input="onCustomerIdInput"
               inputmode="numeric"
@@ -197,6 +199,8 @@ import { useRouteStore } from "@/stores/route.ts";
 import { useProject } from "@/compositions/useApi.ts";
 import Modal from '@/components/Modal.vue';
 import { useRoute } from "vue-router";
+import {useStaticStore} from "@/stores/static.ts";
+import {useMockModeStore} from "@/stores/mockMode.ts";
 
 type Currency = 'USD' | 'RUB' | 'EUR';
 
@@ -206,6 +210,8 @@ const presetScenarioId = route.query.scenario;
 const routes = useRouteStore().data.routes;
 const scenarios = useScenarioStore().data.scenarios;
 const methods = useMethodStore().data.methods;
+const staticRoutes = useStaticStore().data.routes;
+const mockMode = useMockModeStore().data.mode;
 
 const availableRoutes = computed(() => routes.filter(r => useProjectStore().current?.methods.includes(r.method_id)));
 const availableScenarios = computed(() => scenarios.filter(s => availableRoutes.value.map(r => r.id).includes(s.route_id)));
@@ -215,8 +221,8 @@ const showIframe = ref(false);
 const showWidget = ref(false);
 const iframeSize = reactive({ width: 420, height: 700 });
 
-const selected = ref<Option | null>(null);
-const options = computed<Option[]>(
+const selectedScenarioOption = ref<Option | null>(null);
+const scenarioOptions = computed<Option[]>(
     () => availableScenarios.value.map(
         s => {
           const route = routes.find(r => r.id === s.route_id);
@@ -230,8 +236,17 @@ const options = computed<Option[]>(
       )
 );
 
+const selectedStaticOptions = ref<Option[]>([]);
+const staticOptions = computed<Option[]>(
+    () => staticRoutes.map(
+        r => ({
+          title: r.name,
+          value: String(r.id),
+        })
+      )
+);
+
 const buttonsDisabled = ref<boolean>(false);
-const locked = ref<string[]>([]);
 const form = reactive({
   amount: '',
   currency: 'USD' as Currency,
@@ -247,39 +262,28 @@ const isValid = computed(() => {
   return true;
 });
 
-watch(selected, (o) => applyScenario(o), { immediate: false });
+if (mockMode) {
+  const scenarioIndex = scenarioOptions.value.findIndex(o => o.value === String(mockMode.scenarioId));
+  const staticOptionsFromMockMode = staticOptions.value.filter(o => mockMode.staticRoutesIds.includes(Number(o.value)));
 
-function applyScenario(option: Option | null) {
-  const scenario = scenarios.find(s => String(s.id) === option?.value);
+  if (scenarioIndex !== -1) {
+    selectedScenarioOption.value = scenarioOptions.value[scenarioIndex];
+  }
 
-  locked.value = [];
+  selectedStaticOptions.value = staticOptionsFromMockMode;
+}
 
-  if (scenario) {
-    const conditions = JSON.parse(scenario.conditions || '{}');
+watch(selectedScenarioOption, applyMockMode, { immediate: false });
+watch(selectedStaticOptions, applyMockMode, { immediate: false });
 
-    form.amount = '';
-    form.currency = 'USD';
-    form.paymentId = '';
-    form.description = '';
-    form.customerId = '';
-
-    if (conditions['payment.amount']) {
-      form.amount = sanitizeDigits(String(conditions['payment.amount']));
-
-      locked.value.push('amount');
-    }
-
-    if (conditions['payment.currency']) {
-      form.currency = String(conditions['payment.currency']) as Currency;
-
-      locked.value.push('currency');
-    }
-
-    if (conditions['customer.id']) {
-      form.customerId = sanitizeDigits(String(conditions['customer.id']));
-
-      locked.value.push('customerId');
-    }
+async function applyMockMode() {
+  if (selectedScenarioOption.value) {
+    await useMockModeStore().persistMode(
+        {
+          scenarioId: Number(selectedScenarioOption.value.value),
+          staticRoutesIds: selectedStaticOptions.value.map(o => Number(o.value)),
+        }
+    );
   }
 }
 
@@ -335,10 +339,10 @@ async function onBuildLink() {
 onMounted(
     () => {
       if (presetScenarioId) {
-        const option = options.value.find(o => o.value === presetScenarioId);
+        const option = scenarioOptions.value.find(o => o.value === presetScenarioId);
 
         if (option) {
-          selected.value = option;
+          selectedScenarioOption.value = option;
 
           nextTick(onBuildLink);
         }

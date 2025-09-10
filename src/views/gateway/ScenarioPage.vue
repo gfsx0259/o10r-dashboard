@@ -11,7 +11,7 @@
         </button>
         <button
             class="bg-blue-600 hover:bg-blue-700 transition text-white px-4 py-2 rounded"
-            @click="() => open({ title: '', conditions: ''})"
+            @click="() => open({ title: '' })"
         >
           Create
         </button>
@@ -23,7 +23,7 @@
           :key="scenario.id"
           class="bg-white p-4 rounded shadow"
       >
-        <div class="flex justify-between items-center mb-3">
+        <div class="flex justify-between items-center">
           <h2 class="font-semibold text-lg">
             {{ scenario.title }}
           </h2>
@@ -49,14 +49,6 @@
               </button>
             </RouterLink>
 
-            <RouterLink :to="{ path: `/gateway/routes/${parseInt(<string>route.params.routeId)}/scenario/${scenario.id}/static`}">
-              <button
-                  class="bg-slate-500 hover:bg-slate-600 text-white border border-slate-500 px-3 py-1.5 rounded text-sm"
-              >
-                Static
-              </button>
-            </RouterLink>
-
             <RouterLink :to="{ path: `/gateway/routes/${parseInt(<string>route.params.routeId)}/scenario/${scenario.id}`}">
               <button
                   class="bg-gray-700 hover:bg-gray-800 text-white border border-gray-700 px-3 py-1.5 rounded text-sm"
@@ -66,7 +58,6 @@
             </RouterLink>
           </div>
         </div>
-        <div class="bg-gray-100 rounded p-3 text-sm font-mono overflow-x-auto" v-html="highlight(scenario.conditions, languages.json, 'json')"></div>
       </div>
     </div>
     <transition name="fade">
@@ -82,13 +73,6 @@
             <span class="text-sm font-medium">Title</span>
             <input
                 v-model="currentScenario.title"
-                class="w-full p-2 border rounded font-mono text-sm mt-1"
-            />
-          </label>
-          <label class="block">
-            <span class="text-sm font-medium">Conditions</span>
-            <JsonEditorControl
-                v-model="currentScenario.conditions"
                 class="w-full p-2 border rounded font-mono text-sm mt-1"
             />
           </label>
@@ -114,8 +98,6 @@
 
 <script setup lang="ts">
 import {computed, type Ref, ref} from "vue";
-import JsonEditorControl from "@/components/controls/JsonEditorControl.vue";
-import {highlight, languages} from "prismjs";
 import {useScenarioStore} from "@/stores/scenario.ts";
 import type {Scenario} from "@/types/scenario.ts";
 import { useRouter, useRoute } from 'vue-router'
@@ -141,7 +123,6 @@ function open(scenario: Scenario) {
     modalMode.value = "create"
     currentScenario.value = {
       title: '',
-      conditions: '',
       route_id: parseInt(<string>route.params.routeId),
     }
   }

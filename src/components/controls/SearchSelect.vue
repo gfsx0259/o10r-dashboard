@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-2">
-    <label class="block text-sm font-medium text-gray-700">Scenario</label>
+    <label class="block text-sm font-medium text-gray-700">{{ label }}</label>
     <div class="relative">
       <input
           v-model="query"
@@ -25,9 +25,14 @@
       </div>
     </div>
 
-    <div v-if="modelValue" class="flex items-center gap-2 text-sm">
-      <span class="inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-indigo-700">
-        Selected: {{ modelValue.title }}
+    <div v-if="Array.isArray(modelValue) ? modelValue.length : modelValue" class="flex items-center gap-2 text-sm">
+      <template v-if="Array.isArray(modelValue)">
+        <span v-for="option of modelValue" class="inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-indigo-700">
+          {{ option.title }}
+        </span>
+      </template>
+      <span v-else class="inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-indigo-700">
+        {{ modelValue.title }}
       </span>
       <button type="button" @click="clear" class="text-gray-500 hover:text-gray-700">
         Clear
@@ -45,12 +50,13 @@ export interface Option {
 }
 
 const props = defineProps<{
+  label: string,
   options: Option[];
-  modelValue: Option | null;
+  modelValue: Option | Option[] | null;
 }>();
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: Option | null): void;
+  (e: 'update:modelValue', value: Option | Option[] | null): void;
 }>();
 
 const query = ref('');
@@ -58,19 +64,40 @@ const focused = ref<boolean>(false);
 
 const filtered = computed(() => {
   const q = query.value.trim().toLowerCase();
+  const alreadySelected: string[] = [];
 
-  if (!q) return props.options.slice(0, 8);
+  if (Array.isArray(props.modelValue)) {
+    props.modelValue.forEach(o => alreadySelected.push(o.value));
+  } else if (props.modelValue) {
+    alreadySelected.push(props.modelValue.value);
+  }
 
-  return props.options.filter(option => option.title.toLowerCase().includes(q));
+  const filteredOptions = props.options.filter(option => !alreadySelected.includes(option.value));
+
+  if (!q) return filteredOptions.slice(0, 8);
+
+  return filteredOptions.filter(option => option.title.toLowerCase().includes(q));
 });
 
 function select(option: Option) {
-  emit('update:modelValue', option);
-  query.value = option.title;
+  if (Array.isArray(props.modelValue)) {
+    const alreadySelected: string[] = props.modelValue.map(o => o.value);
+
+    if (!alreadySelected.includes(option.value)) {
+      emit('update:modelValue', [...props.modelValue, option]);
+    }
+  } else {
+    emit('update:modelValue', option);
+  }
 }
 
 function clear() {
-  emit('update:modelValue', null);
+  if (Array.isArray(props.modelValue)) {
+    emit('update:modelValue', []);
+  } else {
+    emit('update:modelValue', null);
+  }
+
   query.value = '';
 }
 

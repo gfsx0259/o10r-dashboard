@@ -7,5 +7,4 @@ export interface Scenario {
     id?: number,
     route_id?: string,
     title: string,
-    conditions: string,
 }
