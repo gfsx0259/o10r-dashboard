@@ -4,7 +4,7 @@
       <h1 class="text-2xl font-bold">Routes</h1>
       <button
           class="bg-blue-600 hover:bg-blue-700 transition text-white px-4 py-2 rounded"
-          @click="() => open({ conditions: ''})"
+          @click="() => open({})"
       >
         Create
       </button>
@@ -15,7 +15,7 @@
           :key="route.id"
           class="bg-white p-4 rounded shadow"
       >
-        <div class="flex justify-between items-center mb-3">
+        <div class="flex justify-between items-center">
           <h2 class="font-semibold text-lg">
             {{ useMethodStore().data.methods.find(m => m.id === route.method_id)?.title }}
           </h2>
@@ -42,7 +42,6 @@
             </RouterLink>
           </div>
         </div>
-        <div class="bg-gray-100 rounded p-3 text-sm font-mono overflow-x-auto" v-html="highlight(route.conditions, languages.json, 'json')"></div>
       </div>
     </div>
     <transition name="fade">
@@ -69,13 +68,6 @@
                 {{ method.title }} ({{ method.code }})
               </option>
             </select>
-          </label>
-          <label class="block">
-            <span class="text-sm font-medium">Conditions</span>
-            <JsonEditorControl
-                v-model="currentRoute.conditions"
-                class="w-full p-2 border rounded font-mono text-sm mt-1"
-            />
           </label>
           <div class="flex justify-end space-x-2 pt-2">
             <button
@@ -119,7 +111,6 @@ function open(route: Route) {
     currentRoute.value = {
       id: undefined,
       method_id: null,
-      conditions: '',
     }
   }
   isModalOpen.value = true
