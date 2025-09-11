@@ -200,7 +200,7 @@ import { useProject } from "@/compositions/useApi.ts";
 import Modal from '@/components/Modal.vue';
 import { useRoute } from "vue-router";
 import {useStaticStore} from "@/stores/static.ts";
-import {useMockModeStore} from "@/stores/mockMode.ts";
+import {useActiveScenarioStore} from "@/stores/activeScenario.ts";
 
 type Currency = 'USD' | 'RUB' | 'EUR';
 
@@ -211,7 +211,7 @@ const routes = useRouteStore().data.routes;
 const scenarios = useScenarioStore().data.scenarios;
 const methods = useMethodStore().data.methods;
 const staticRoutes = useStaticStore().data.routes;
-const mockMode = useMockModeStore().data.mode;
+const activeScenario = useActiveScenarioStore().data.activeScenario;
 
 const availableRoutes = computed(() => routes.filter(r => useProjectStore().current?.methods.includes(r.method_id)));
 const availableScenarios = computed(() => scenarios.filter(s => availableRoutes.value.map(r => r.id).includes(s.route_id)));
@@ -262,23 +262,23 @@ const isValid = computed(() => {
   return true;
 });
 
-if (mockMode) {
-  const scenarioIndex = scenarioOptions.value.findIndex(o => o.value === String(mockMode.scenarioId));
-  const staticOptionsFromMockMode = staticOptions.value.filter(o => mockMode.staticRoutesIds.includes(Number(o.value)));
+if (activeScenario) {
+  const scenarioIndex = scenarioOptions.value.findIndex(o => o.value === String(activeScenario.scenarioId));
+  const staticOptionsFromActiveScenario = staticOptions.value.filter(o => activeScenario.staticRoutesIds.includes(Number(o.value)));
 
   if (scenarioIndex !== -1) {
     selectedScenarioOption.value = scenarioOptions.value[scenarioIndex];
   }
 
-  selectedStaticOptions.value = staticOptionsFromMockMode;
+  selectedStaticOptions.value = staticOptionsFromActiveScenario;
 }
 
-watch(selectedScenarioOption, applyMockMode, { immediate: false });
-watch(selectedStaticOptions, applyMockMode, { immediate: false });
+watch(selectedScenarioOption, applyActiveScenario, { immediate: false });
+watch(selectedStaticOptions, applyActiveScenario, { immediate: false });
 
-async function applyMockMode() {
+async function applyActiveScenario() {
   if (selectedScenarioOption.value) {
-    await useMockModeStore().persistMode(
+    await useActiveScenarioStore().persistMode(
         {
           scenarioId: Number(selectedScenarioOption.value.value),
           staticRoutesIds: selectedStaticOptions.value.map(o => Number(o.value)),
