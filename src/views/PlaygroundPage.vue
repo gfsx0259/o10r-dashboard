@@ -104,25 +104,25 @@
         </button>
 
         <!-- Built link preview -->
-        <div v-if="builtUrl" class="mt-2 w-full">
+        <div v-if="sid" class="mt-2 w-full">
           <div class="rounded border bg-gray-50 p-3 text-sm">
-            <div class="mb-2 font-medium text-gray-700">Generated link</div>
-            <div class="break-all text-gray-800">{{ builtUrl }}</div>
+            <div class="mb-2 font-medium text-gray-700">Session ID</div>
+            <div class="break-all text-gray-800">{{ sid }}</div>
             <div class="mt-2">
-              <a
-                  class="inline-block rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 me-2"
-                  :href="builtUrl"
-                  target="_blank"
-                  rel="noreferrer"
+              <button
+                  type="button"
+                  class="rounded bg-blue-600 px-4 py-2 text-white shadow hover:bg-blue-700 disabled:opacity-50 me-2"
+                  :disabled="!sid"
+                  @click="openPPInNewWindow"
               >
                 Open in new tab
-              </a>
+              </button>
 
               <button
                   type="button"
                   class="rounded bg-gray-800 px-4 py-2 text-white shadow hover:bg-gray-900 disabled:opacity-50 me-2"
-                  :disabled="!builtUrl"
-                  @click="showIframe = true"
+                  :disabled="!sid"
+                  @click="openPPInIframe"
               >
                 Open in iframe
               </button>
@@ -130,8 +130,8 @@
               <button
                   type="button"
                   class="rounded bg-emerald-600 px-4 py-2 text-white shadow hover:bg-emerald-700 disabled:opacity-50"
-                  :disabled="!builtUrl"
-                  @click="showWidget = true"
+                  :disabled="!sid"
+                  @click="openPPInWidget"
               >
                 Open in widget
               </button>
@@ -166,24 +166,17 @@
       </div>
       <div class="overflow-auto rounded border flex justify-center">
         <iframe
-            v-if="builtUrl"
-            :src="builtUrl"
+            id="pp-iframe"
             :style="{ width: iframeSize.width + 'px', height: iframeSize.height + 'px' }"
             class="block"
         />
-        <div v-else class="p-4 text-sm text-gray-500">Build a link first.</div>
       </div>
     </div>
 
     <!-- Widget Modal -->
     <Modal :open="showWidget" title="Payment Widget" @close="showWidget = false">
       <div class="overflow-hidden flex justify-center">
-        <iframe
-            v-if="builtUrl"
-            :src="builtUrl"
-            class="block h-[700px] w-full"
-        />
-        <div v-else class="p-4 text-sm text-gray-500">Build a link first.</div>
+        <iframe ref="iframeWidget" class="block h-[700px] w-full" />
       </div>
     </Modal>
   </div>
@@ -201,6 +194,7 @@ import Modal from '@/components/Modal.vue';
 import { useRoute } from "vue-router";
 import {useStaticStore} from "@/stores/static.ts";
 import {useActiveScenarioStore} from "@/stores/activeScenario.ts";
+import {o10rPPSdk} from "o10r-pp-sdk";
 
 type Currency = 'USD' | 'RUB' | 'EUR';
 
@@ -216,9 +210,10 @@ const activeScenario = useActiveScenarioStore().data.activeScenario;
 const availableRoutes = computed(() => routes.filter(r => useProjectStore().current?.methods.includes(r.method_id)));
 const availableScenarios = computed(() => scenarios.filter(s => availableRoutes.value.map(r => r.id).includes(s.route_id)));
 
-const builtUrl = ref<string>('');
+const sid = ref<string>('');
 const showIframe = ref(false);
 const showWidget = ref(false);
+const iframeWidget = ref<HTMLIFrameElement | null>(null);
 const iframeSize = reactive({ width: 420, height: 700 });
 
 const selectedScenarioOption = ref<Option | null>(null);
@@ -305,7 +300,7 @@ function onCustomerIdInput(e: Event) {
   form.customerId = cleaned;
 }
 
-async function buildUrl(): Promise<string> {
+async function getSid(): Promise<string> {
   const project = useProjectStore().current;
 
   if (project) {
@@ -318,7 +313,7 @@ async function buildUrl(): Promise<string> {
         parseInt(form.customerId) || undefined,
     );
 
-    return `https://pp.o10r.io/?sid=${response.data.sid}`;
+    return response.data.sid;
   }
 
   return '';
@@ -326,14 +321,51 @@ async function buildUrl(): Promise<string> {
 
 async function onBuildLink() {
   buttonsDisabled.value = true;
-  builtUrl.value = '';
 
   if (!isValid.value) {
     return;
   }
 
-  builtUrl.value = await buildUrl();
+  sid.value = await getSid();
   buttonsDisabled.value = false;
+}
+
+function openPPInNewWindow() {
+  if (sid.value) {
+    const sdk = new o10rPPSdk(sid.value);
+
+    sdk.open();
+  }
+}
+
+function openPPInIframe() {
+  if (sid.value) {
+    showIframe.value = true;
+
+    nextTick(
+        () => {
+          const sdk = new o10rPPSdk(sid.value);
+
+          sdk.mount('#pp-iframe');
+        }
+    );
+  }
+}
+
+function openPPInWidget() {
+  if (sid.value) {
+    showWidget.value = true;
+
+    nextTick(
+        () => {
+          const sdk = new o10rPPSdk(sid.value);
+
+          if (iframeWidget.value) {
+            sdk.mount(iframeWidget.value);
+          }
+        }
+    );
+  }
 }
 
 onMounted(
