@@ -27,12 +27,11 @@ const mode = ref(route.params.mode);
 const params = ref(route.query);
 
 const returnUrlDefault = route.query['return_url[default]'] as string;
-const returnUrlNotification = route.query['return_url[notification]'] as string;
+const returnUrlNotification = route.query['return_url[default]'] as string;
 const isThreeDS2 = !route.query.md;
 const isHiddenIframe = Boolean(route.query.threeDSMethodData && route.query['3DSMethodData']);
 
 delete params.value['return_url[default]'];
-delete params.value['return_url[notification]'];
 
 const confirm = async () => {
   try {
